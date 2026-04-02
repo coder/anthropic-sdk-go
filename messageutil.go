@@ -28,7 +28,24 @@ func (acc *Message) Accumulate(event MessageStreamEventUnion) error {
 	case MessageDeltaEvent:
 		acc.StopReason = event.Delta.StopReason
 		acc.StopSequence = event.Delta.StopSequence
-		acc.Usage.OutputTokens = event.Usage.OutputTokens
+		// Merge only fields whose JSON presence is set, so earlier cumulative
+		// values (e.g. input and cache tokens from message_start) are preserved
+		// when a later delta omits them.
+		if event.Usage.JSON.CacheCreationInputTokens.Valid() {
+			acc.Usage.CacheCreationInputTokens = event.Usage.CacheCreationInputTokens
+		}
+		if event.Usage.JSON.CacheReadInputTokens.Valid() {
+			acc.Usage.CacheReadInputTokens = event.Usage.CacheReadInputTokens
+		}
+		if event.Usage.JSON.InputTokens.Valid() {
+			acc.Usage.InputTokens = event.Usage.InputTokens
+		}
+		if event.Usage.JSON.OutputTokens.Valid() {
+			acc.Usage.OutputTokens = event.Usage.OutputTokens
+		}
+		if event.Usage.JSON.ServerToolUse.Valid() {
+			acc.Usage.ServerToolUse = event.Usage.ServerToolUse
+		}
 	case ContentBlockStartEvent:
 		acc.Content = append(acc.Content, ContentBlockUnion{})
 		err := acc.Content[len(acc.Content)-1].UnmarshalJSON([]byte(event.ContentBlock.RawJSON()))

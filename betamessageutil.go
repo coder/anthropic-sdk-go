@@ -28,8 +28,27 @@ func (acc *BetaMessage) Accumulate(event BetaRawMessageStreamEventUnion) error {
 	case BetaRawMessageDeltaEvent:
 		acc.StopReason = event.Delta.StopReason
 		acc.StopSequence = event.Delta.StopSequence
-		acc.Usage.OutputTokens = event.Usage.OutputTokens
-		acc.Usage.Iterations = event.Usage.Iterations
+		// Merge only fields whose JSON presence is set, so earlier cumulative
+		// values (e.g. input and cache tokens from message_start) are preserved
+		// when a later delta omits them.
+		if event.Usage.JSON.CacheCreationInputTokens.Valid() {
+			acc.Usage.CacheCreationInputTokens = event.Usage.CacheCreationInputTokens
+		}
+		if event.Usage.JSON.CacheReadInputTokens.Valid() {
+			acc.Usage.CacheReadInputTokens = event.Usage.CacheReadInputTokens
+		}
+		if event.Usage.JSON.InputTokens.Valid() {
+			acc.Usage.InputTokens = event.Usage.InputTokens
+		}
+		if event.Usage.JSON.Iterations.Valid() {
+			acc.Usage.Iterations = event.Usage.Iterations
+		}
+		if event.Usage.JSON.OutputTokens.Valid() {
+			acc.Usage.OutputTokens = event.Usage.OutputTokens
+		}
+		if event.Usage.JSON.ServerToolUse.Valid() {
+			acc.Usage.ServerToolUse = event.Usage.ServerToolUse
+		}
 		acc.ContextManagement = event.ContextManagement
 	case BetaRawContentBlockStartEvent:
 		acc.Content = append(acc.Content, BetaContentBlockUnion{})
