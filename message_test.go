@@ -263,14 +263,14 @@ func TestAccumulate(t *testing.T) {
 		"cache tokens preserved through message_delta": {
 			events: []string{
 				`{"type": "message_start", "message": {"usage": {"input_tokens": 200, "output_tokens": 0, "cache_creation_input_tokens": 30, "cache_read_input_tokens": 150}}}`,
-				`{"type": "message_delta", "delta": {}, "usage": {"output_tokens": 75}}`,
+				`{"type": "message_delta", "delta": {}, "usage": {"output_tokens": 75, "cache_creation_input_tokens": 35, "cache_read_input_tokens": 160}}`,
 				`{"type": "message_stop"}`,
 			},
 			expected: anthropic.Message{Usage: anthropic.Usage{
 				InputTokens:              200,
 				OutputTokens:             75,
-				CacheCreationInputTokens: 30,
-				CacheReadInputTokens:     150,
+				CacheCreationInputTokens: 35,
+				CacheReadInputTokens:     160,
 			}},
 		},
 		"message_delta does not clobber message_start usage": {
