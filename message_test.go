@@ -249,6 +249,43 @@ func TestAccumulate(t *testing.T) {
 				`{"type: "message_stop"}`,
 			},
 		},
+		"usage tokens from message_start and message_delta": {
+			events: []string{
+				`{"type": "message_start", "message": {"usage": {"input_tokens": 100, "output_tokens": 0}}}`,
+				`{"type": "message_delta", "delta": {}, "usage": {"output_tokens": 50}}`,
+				`{"type": "message_stop"}`,
+			},
+			expected: anthropic.Message{Usage: anthropic.Usage{
+				InputTokens:  100,
+				OutputTokens: 50,
+			}},
+		},
+		"cache tokens preserved through message_delta": {
+			events: []string{
+				`{"type": "message_start", "message": {"usage": {"input_tokens": 200, "output_tokens": 0, "cache_creation_input_tokens": 30, "cache_read_input_tokens": 150}}}`,
+				`{"type": "message_delta", "delta": {}, "usage": {"output_tokens": 75, "cache_creation_input_tokens": 35, "cache_read_input_tokens": 160}}`,
+				`{"type": "message_stop"}`,
+			},
+			expected: anthropic.Message{Usage: anthropic.Usage{
+				InputTokens:              200,
+				OutputTokens:             75,
+				CacheCreationInputTokens: 35,
+				CacheReadInputTokens:     160,
+			}},
+		},
+		"message_delta does not clobber message_start usage": {
+			events: []string{
+				`{"type": "message_start", "message": {"usage": {"input_tokens": 111, "output_tokens": 5, "cache_creation_input_tokens": 22, "cache_read_input_tokens": 33}}}`,
+				`{"type": "message_delta", "delta": {}, "usage": {"output_tokens": 60}}`,
+				`{"type": "message_stop"}`,
+			},
+			expected: anthropic.Message{Usage: anthropic.Usage{
+				InputTokens:              111,
+				OutputTokens:             60,
+				CacheCreationInputTokens: 22,
+				CacheReadInputTokens:     33,
+			}},
+		},
 		"text content block": {
 			events: []string{
 				`{"type": "message_start", "message": {}}`,
