@@ -23,9 +23,9 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/tidwall/sjson"
 
-	"github.com/anthropics/anthropic-sdk-go/internal/requestconfig"
-	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/anthropics/anthropic-sdk-go/packages/ssestream"
+	"github.com/charmbracelet/anthropic-sdk-go/internal/requestconfig"
+	"github.com/charmbracelet/anthropic-sdk-go/option"
+	"github.com/charmbracelet/anthropic-sdk-go/packages/ssestream"
 )
 
 const DefaultVersion = "bedrock-2023-05-31"
@@ -164,9 +164,7 @@ func (e *eventstreamDecoder) Event() ssestream.Event {
 	return e.evt
 }
 
-var (
-	_ ssestream.Decoder = &eventstreamDecoder{}
-)
+var _ ssestream.Decoder = &eventstreamDecoder{}
 
 func init() {
 	ssestream.RegisterDecoder("application/vnd.amazon.eventstream", func(rc io.ReadCloser) ssestream.Decoder {
@@ -267,25 +265,29 @@ func bedrockMiddleware(signer *v4.Signer, cfg aws.Config) option.Middleware {
 			r.ContentLength = int64(len(body))
 		}
 
-		// Use bearer token authentication if configured, otherwise fall back to SigV4
-		if cfg.BearerAuthTokenProvider != nil {
-			token, err := cfg.BearerAuthTokenProvider.RetrieveBearerToken(r.Context())
-			if err != nil {
-				return nil, err
-			}
-			r.Header.Set("Authorization", "Bearer "+token.Value)
-		} else {
-			ctx := r.Context()
+		ctx := r.Context()
+
+		switch {
+		case os.Getenv("AWS_BEARER_TOKEN_BEDROCK") != "":
+			r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", os.Getenv("AWS_BEARER_TOKEN_BEDROCK")))
+		case cfg.Credentials != nil:
 			credentials, err := cfg.Credentials.Retrieve(ctx)
 			if err != nil {
 				return nil, err
 			}
-
 			hash := sha256.Sum256(body)
 			err = signer.SignHTTP(ctx, credentials, r, hex.EncodeToString(hash[:]), "bedrock", cfg.Region, time.Now())
 			if err != nil {
 				return nil, err
 			}
+		case cfg.BearerAuthTokenProvider != nil:
+			token, err := cfg.BearerAuthTokenProvider.RetrieveBearerToken(ctx)
+			if err != nil {
+				return nil, err
+			}
+			r.Header.Set("Authorization", fmt.Sprintf("Bearer %s", token.Value))
+		default:
+			return nil, fmt.Errorf("no credentials or bearer token provider given")
 		}
 
 		return next(r)

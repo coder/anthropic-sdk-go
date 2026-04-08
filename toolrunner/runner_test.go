@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	anthropic "github.com/anthropics/anthropic-sdk-go"
-	"github.com/anthropics/anthropic-sdk-go/internal/testutil"
-	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/anthropics/anthropic-sdk-go/toolrunner"
+	anthropic "github.com/charmbracelet/anthropic-sdk-go"
+	"github.com/charmbracelet/anthropic-sdk-go/internal/testutil"
+	"github.com/charmbracelet/anthropic-sdk-go/option"
+	"github.com/charmbracelet/anthropic-sdk-go/toolrunner"
 )
 
 // schemaToBytes converts a map schema to JSON bytes for use with NewBetaToolFromBytes.

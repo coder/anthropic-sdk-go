@@ -10,9 +10,9 @@ import (
 	"slices"
 	"time"
 
-	"github.com/anthropics/anthropic-sdk-go/internal/requestconfig"
-	"github.com/anthropics/anthropic-sdk-go/option"
-	"github.com/anthropics/anthropic-sdk-go/shared/constant"
+	"github.com/charmbracelet/anthropic-sdk-go/internal/requestconfig"
+	"github.com/charmbracelet/anthropic-sdk-go/option"
+	"github.com/charmbracelet/anthropic-sdk-go/shared/constant"
 )
 
 // Client creates a struct with services and top level methods that help with
