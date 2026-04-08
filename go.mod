@@ -1,15 +1,15 @@
 module github.com/anthropics/anthropic-sdk-go
 
-go 1.23.0
+go 1.24
 
 toolchain go1.24.3
 
 require (
 	github.com/aws/aws-sdk-go-v2 v1.30.3
-	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.6.3
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.8
 	github.com/aws/aws-sdk-go-v2/config v1.27.27
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.27
-	github.com/aws/smithy-go v1.20.3
+	github.com/aws/smithy-go v1.24.2
 	github.com/dnaeon/go-vcr v1.2.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/stretchr/testify v1.8.4
