@@ -14,6 +14,7 @@ import (
 )
 
 func TestBetaModelGetWithOptionalParams(t *testing.T) {
+	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
@@ -42,6 +43,7 @@ func TestBetaModelGetWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaModelListWithOptionalParams(t *testing.T) {
+	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
