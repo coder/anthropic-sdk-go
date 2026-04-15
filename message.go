@@ -119,7 +119,7 @@ func (r Base64ImageSourceParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r Base64ImageSourceParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -3286,7 +3286,7 @@ func (r ImageBlockParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r ImageBlockParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -4056,7 +4056,7 @@ func (r MessageParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r MessageParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -5023,7 +5023,7 @@ func (r RedactedThinkingBlockParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r RedactedThinkingBlockParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -5444,7 +5444,7 @@ func (r TextBlockParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r TextBlockParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -6293,7 +6293,7 @@ func (r ThinkingBlockParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r ThinkingBlockParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -6769,7 +6769,7 @@ func (r ToolResultBlockParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r ToolResultBlockParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -7963,7 +7963,7 @@ func (r ToolUseBlockParam) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r ToolUseBlockParam) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
@@ -9283,7 +9283,7 @@ func (r MessageNewParams) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 func (r MessageNewParams) EncodeDirect() (any, bool) {
-	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
 		return nil, false
 	}
 	if _, ok := r.Overrides(); ok {
