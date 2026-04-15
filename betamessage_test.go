@@ -15,11 +15,12 @@ import (
 )
 
 func TestBetaMessageNewWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	t.Skip("prism validates based on the non-beta endpoint")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -178,11 +179,12 @@ func TestBetaMessageNewWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaMessageCountTokensWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	t.Skip("prism validates based on the non-beta endpoint")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return

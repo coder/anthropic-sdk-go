@@ -18,10 +18,11 @@ import (
 )
 
 func TestBetaFileListWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -46,10 +47,11 @@ func TestBetaFileListWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaFileDeleteWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -115,10 +117,11 @@ func TestBetaFileDownloadWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaFileGetMetadataWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -144,10 +147,11 @@ func TestBetaFileGetMetadataWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaFileUploadWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return

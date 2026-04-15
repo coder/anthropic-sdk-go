@@ -14,10 +14,11 @@ import (
 )
 
 func TestMessageBatchNew(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -136,10 +137,11 @@ func TestMessageBatchNew(t *testing.T) {
 }
 
 func TestMessageBatchGet(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -159,10 +161,11 @@ func TestMessageBatchGet(t *testing.T) {
 }
 
 func TestMessageBatchListWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -186,10 +189,11 @@ func TestMessageBatchListWithOptionalParams(t *testing.T) {
 }
 
 func TestMessageBatchDelete(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -209,10 +213,11 @@ func TestMessageBatchDelete(t *testing.T) {
 }
 
 func TestMessageBatchCancel(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return

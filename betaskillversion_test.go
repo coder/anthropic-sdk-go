@@ -16,11 +16,12 @@ import (
 )
 
 func TestBetaSkillVersionNewWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	t.Skip("prism binary unsupported")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -47,10 +48,11 @@ func TestBetaSkillVersionNewWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaSkillVersionGetWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -77,10 +79,11 @@ func TestBetaSkillVersionGetWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaSkillVersionListWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -108,10 +111,11 @@ func TestBetaSkillVersionListWithOptionalParams(t *testing.T) {
 }
 
 func TestBetaSkillVersionDeleteWithOptionalParams(t *testing.T) {
-	t.Skip("requires mock server on localhost:4010")
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
+	} else {
+		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
