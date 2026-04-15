@@ -118,6 +118,16 @@ func (r Base64ImageSourceParam) MarshalJSON() (data []byte, err error) {
 	type shadow Base64ImageSourceParam
 	return param.MarshalObject(r, (*shadow)(&r))
 }
+func (r Base64ImageSourceParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow Base64ImageSourceParam
+	return (*shadow)(&r), true
+}
 func (r *Base64ImageSourceParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -3275,6 +3285,16 @@ func (r ImageBlockParam) MarshalJSON() (data []byte, err error) {
 	type shadow ImageBlockParam
 	return param.MarshalObject(r, (*shadow)(&r))
 }
+func (r ImageBlockParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow ImageBlockParam
+	return (*shadow)(&r), true
+}
 func (r *ImageBlockParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -4034,6 +4054,16 @@ func NewAssistantMessage(blocks ...ContentBlockParamUnion) MessageParam {
 func (r MessageParam) MarshalJSON() (data []byte, err error) {
 	type shadow MessageParam
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r MessageParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow MessageParam
+	return (*shadow)(&r), true
 }
 func (r *MessageParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
@@ -4992,6 +5022,16 @@ func (r RedactedThinkingBlockParam) MarshalJSON() (data []byte, err error) {
 	type shadow RedactedThinkingBlockParam
 	return param.MarshalObject(r, (*shadow)(&r))
 }
+func (r RedactedThinkingBlockParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow RedactedThinkingBlockParam
+	return (*shadow)(&r), true
+}
 func (r *RedactedThinkingBlockParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -5402,6 +5442,16 @@ type TextBlockParam struct {
 func (r TextBlockParam) MarshalJSON() (data []byte, err error) {
 	type shadow TextBlockParam
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r TextBlockParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow TextBlockParam
+	return (*shadow)(&r), true
 }
 func (r *TextBlockParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
@@ -6242,6 +6292,16 @@ func (r ThinkingBlockParam) MarshalJSON() (data []byte, err error) {
 	type shadow ThinkingBlockParam
 	return param.MarshalObject(r, (*shadow)(&r))
 }
+func (r ThinkingBlockParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow ThinkingBlockParam
+	return (*shadow)(&r), true
+}
 func (r *ThinkingBlockParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -6707,6 +6767,16 @@ type ToolResultBlockParam struct {
 func (r ToolResultBlockParam) MarshalJSON() (data []byte, err error) {
 	type shadow ToolResultBlockParam
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r ToolResultBlockParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow ToolResultBlockParam
+	return (*shadow)(&r), true
 }
 func (r *ToolResultBlockParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
@@ -7891,6 +7961,16 @@ type ToolUseBlockParam struct {
 func (r ToolUseBlockParam) MarshalJSON() (data []byte, err error) {
 	type shadow ToolUseBlockParam
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r ToolUseBlockParam) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow ToolUseBlockParam
+	return (*shadow)(&r), true
 }
 func (r *ToolUseBlockParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
@@ -9201,6 +9281,16 @@ type MessageNewParams struct {
 func (r MessageNewParams) MarshalJSON() (data []byte, err error) {
 	type shadow MessageNewParams
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+func (r MessageNewParams) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || param.IsNull(r) {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow MessageNewParams
+	return (*shadow)(&r), true
 }
 func (r *MessageNewParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
