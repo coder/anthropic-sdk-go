@@ -364,6 +364,29 @@ type BashCodeExecutionToolResultBlockParamContentUnion struct {
 func (u BashCodeExecutionToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfRequestBashCodeExecutionToolResultError, u.OfRequestBashCodeExecutionResultBlock)
 }
+
+func (u BashCodeExecutionToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfRequestBashCodeExecutionToolResultError != nil {
+		present = u.OfRequestBashCodeExecutionToolResultError
+	}
+	if u.OfRequestBashCodeExecutionResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestBashCodeExecutionResultBlock
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *BashCodeExecutionToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -1246,6 +1269,35 @@ type CodeExecutionToolResultBlockParamContentUnion struct {
 func (u CodeExecutionToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfRequestCodeExecutionToolResultError, u.OfRequestCodeExecutionResultBlock, u.OfRequestEncryptedCodeExecutionResultBlock)
 }
+
+func (u CodeExecutionToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfRequestCodeExecutionToolResultError != nil {
+		present = u.OfRequestCodeExecutionToolResultError
+	}
+	if u.OfRequestCodeExecutionResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestCodeExecutionResultBlock
+	}
+	if u.OfRequestEncryptedCodeExecutionResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestEncryptedCodeExecutionResultBlock
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *CodeExecutionToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -1994,6 +2046,113 @@ func (u ContentBlockParamUnion) MarshalJSON() ([]byte, error) {
 		u.OfTextEditorCodeExecutionToolResult,
 		u.OfToolSearchToolResult,
 		u.OfContainerUpload)
+}
+
+func (u ContentBlockParamUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfText != nil {
+		present = u.OfText
+	}
+	if u.OfImage != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfImage
+	}
+	if u.OfDocument != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfDocument
+	}
+	if u.OfSearchResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfSearchResult
+	}
+	if u.OfThinking != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfThinking
+	}
+	if u.OfRedactedThinking != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRedactedThinking
+	}
+	if u.OfToolUse != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolUse
+	}
+	if u.OfToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolResult
+	}
+	if u.OfServerToolUse != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfServerToolUse
+	}
+	if u.OfWebSearchToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebSearchToolResult
+	}
+	if u.OfWebFetchToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebFetchToolResult
+	}
+	if u.OfCodeExecutionToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionToolResult
+	}
+	if u.OfBashCodeExecutionToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfBashCodeExecutionToolResult
+	}
+	if u.OfTextEditorCodeExecutionToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditorCodeExecutionToolResult
+	}
+	if u.OfToolSearchToolResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolSearchToolResult
+	}
+	if u.OfContainerUpload != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfContainerUpload
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *ContentBlockParamUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -2869,6 +3028,29 @@ type ContentBlockSourceContentUnionParam struct {
 func (u ContentBlockSourceContentUnionParam) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfString, u.OfContentBlockSourceContent)
 }
+
+func (u ContentBlockSourceContentUnionParam) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfString.Valid() {
+		present = u.OfString
+	}
+	if u.OfContentBlockSourceContent != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfContentBlockSourceContent
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *ContentBlockSourceContentUnionParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -2910,6 +3092,29 @@ type ContentBlockSourceContentItemUnionParam struct {
 
 func (u ContentBlockSourceContentItemUnionParam) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfText, u.OfImage)
+}
+
+func (u ContentBlockSourceContentItemUnionParam) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfText != nil {
+		present = u.OfText
+	}
+	if u.OfImage != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfImage
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *ContentBlockSourceContentItemUnionParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -3147,6 +3352,41 @@ type DocumentBlockParamSourceUnion struct {
 func (u DocumentBlockParamSourceUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfBase64, u.OfText, u.OfContent, u.OfURL)
 }
+
+func (u DocumentBlockParamSourceUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfBase64 != nil {
+		present = u.OfBase64
+	}
+	if u.OfText != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfText
+	}
+	if u.OfContent != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfContent
+	}
+	if u.OfURL != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfURL
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *DocumentBlockParamSourceUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -3310,6 +3550,29 @@ type ImageBlockParamSourceUnion struct {
 
 func (u ImageBlockParamSourceUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfBase64, u.OfURL)
+}
+
+func (u ImageBlockParamSourceUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfBase64 != nil {
+		present = u.OfBase64
+	}
+	if u.OfURL != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfURL
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *ImageBlockParamSourceUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -3618,6 +3881,107 @@ func (u MessageCountTokensToolUnionParam) MarshalJSON() ([]byte, error) {
 		u.OfWebFetchTool20260209,
 		u.OfToolSearchToolBm25_20251119,
 		u.OfToolSearchToolRegex20251119)
+}
+
+func (u MessageCountTokensToolUnionParam) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfTool != nil {
+		present = u.OfTool
+	}
+	if u.OfBashTool20250124 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfBashTool20250124
+	}
+	if u.OfCodeExecutionTool20250522 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionTool20250522
+	}
+	if u.OfCodeExecutionTool20250825 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionTool20250825
+	}
+	if u.OfCodeExecutionTool20260120 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionTool20260120
+	}
+	if u.OfMemoryTool20250818 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfMemoryTool20250818
+	}
+	if u.OfTextEditor20250124 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditor20250124
+	}
+	if u.OfTextEditor20250429 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditor20250429
+	}
+	if u.OfTextEditor20250728 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditor20250728
+	}
+	if u.OfWebSearchTool20250305 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebSearchTool20250305
+	}
+	if u.OfWebFetchTool20250910 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebFetchTool20250910
+	}
+	if u.OfWebSearchTool20260209 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebSearchTool20260209
+	}
+	if u.OfWebFetchTool20260209 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebFetchTool20260209
+	}
+	if u.OfToolSearchToolBm25_20251119 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolSearchToolBm25_20251119
+	}
+	if u.OfToolSearchToolRegex20251119 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolSearchToolRegex20251119
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *MessageCountTokensToolUnionParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -5328,6 +5692,35 @@ type ServerToolUseBlockParamCallerUnion struct {
 func (u ServerToolUseBlockParamCallerUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfDirect, u.OfCodeExecution20250825, u.OfCodeExecution20260120)
 }
+
+func (u ServerToolUseBlockParamCallerUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfDirect != nil {
+		present = u.OfDirect
+	}
+	if u.OfCodeExecution20250825 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20250825
+	}
+	if u.OfCodeExecution20260120 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20260120
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *ServerToolUseBlockParamCallerUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -5602,6 +5995,47 @@ func (u TextCitationParamUnion) MarshalJSON() ([]byte, error) {
 		u.OfContentBlockLocation,
 		u.OfWebSearchResultLocation,
 		u.OfSearchResultLocation)
+}
+
+func (u TextCitationParamUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfCharLocation != nil {
+		present = u.OfCharLocation
+	}
+	if u.OfPageLocation != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfPageLocation
+	}
+	if u.OfContentBlockLocation != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfContentBlockLocation
+	}
+	if u.OfWebSearchResultLocation != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebSearchResultLocation
+	}
+	if u.OfSearchResultLocation != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfSearchResultLocation
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *TextCitationParamUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -6007,6 +6441,41 @@ type TextEditorCodeExecutionToolResultBlockParamContentUnion struct {
 func (u TextEditorCodeExecutionToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfRequestTextEditorCodeExecutionToolResultError, u.OfRequestTextEditorCodeExecutionViewResultBlock, u.OfRequestTextEditorCodeExecutionCreateResultBlock, u.OfRequestTextEditorCodeExecutionStrReplaceResultBlock)
 }
+
+func (u TextEditorCodeExecutionToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfRequestTextEditorCodeExecutionToolResultError != nil {
+		present = u.OfRequestTextEditorCodeExecutionToolResultError
+	}
+	if u.OfRequestTextEditorCodeExecutionViewResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestTextEditorCodeExecutionViewResultBlock
+	}
+	if u.OfRequestTextEditorCodeExecutionCreateResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestTextEditorCodeExecutionCreateResultBlock
+	}
+	if u.OfRequestTextEditorCodeExecutionStrReplaceResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestTextEditorCodeExecutionStrReplaceResultBlock
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *TextEditorCodeExecutionToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -6392,6 +6861,35 @@ type ThinkingConfigParamUnion struct {
 func (u ThinkingConfigParamUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfEnabled, u.OfDisabled, u.OfAdaptive)
 }
+
+func (u ThinkingConfigParamUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfEnabled != nil {
+		present = u.OfEnabled
+	}
+	if u.OfDisabled != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfDisabled
+	}
+	if u.OfAdaptive != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfAdaptive
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *ThinkingConfigParamUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -6572,6 +7070,41 @@ type ToolChoiceUnionParam struct {
 
 func (u ToolChoiceUnionParam) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfAuto, u.OfAny, u.OfTool, u.OfNone)
+}
+
+func (u ToolChoiceUnionParam) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfAuto != nil {
+		present = u.OfAuto
+	}
+	if u.OfAny != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfAny
+	}
+	if u.OfTool != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTool
+	}
+	if u.OfNone != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfNone
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *ToolChoiceUnionParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -6800,6 +7333,47 @@ func (u ToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 		u.OfSearchResult,
 		u.OfDocument,
 		u.OfToolReference)
+}
+
+func (u ToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfText != nil {
+		present = u.OfText
+	}
+	if u.OfImage != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfImage
+	}
+	if u.OfSearchResult != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfSearchResult
+	}
+	if u.OfDocument != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfDocument
+	}
+	if u.OfToolReference != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolReference
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *ToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -7184,6 +7758,29 @@ type ToolSearchToolResultBlockParamContentUnion struct {
 func (u ToolSearchToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfRequestToolSearchToolResultError, u.OfRequestToolSearchToolSearchResultBlock)
 }
+
+func (u ToolSearchToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfRequestToolSearchToolResultError != nil {
+		present = u.OfRequestToolSearchToolResultError
+	}
+	if u.OfRequestToolSearchToolSearchResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestToolSearchToolSearchResultBlock
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *ToolSearchToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -7467,6 +8064,107 @@ func (u ToolUnionParam) MarshalJSON() ([]byte, error) {
 		u.OfWebFetchTool20260209,
 		u.OfToolSearchToolBm25_20251119,
 		u.OfToolSearchToolRegex20251119)
+}
+
+func (u ToolUnionParam) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfTool != nil {
+		present = u.OfTool
+	}
+	if u.OfBashTool20250124 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfBashTool20250124
+	}
+	if u.OfCodeExecutionTool20250522 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionTool20250522
+	}
+	if u.OfCodeExecutionTool20250825 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionTool20250825
+	}
+	if u.OfCodeExecutionTool20260120 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecutionTool20260120
+	}
+	if u.OfMemoryTool20250818 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfMemoryTool20250818
+	}
+	if u.OfTextEditor20250124 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditor20250124
+	}
+	if u.OfTextEditor20250429 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditor20250429
+	}
+	if u.OfTextEditor20250728 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextEditor20250728
+	}
+	if u.OfWebSearchTool20250305 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebSearchTool20250305
+	}
+	if u.OfWebFetchTool20250910 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebFetchTool20250910
+	}
+	if u.OfWebSearchTool20260209 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebSearchTool20260209
+	}
+	if u.OfWebFetchTool20260209 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfWebFetchTool20260209
+	}
+	if u.OfToolSearchToolBm25_20251119 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolSearchToolBm25_20251119
+	}
+	if u.OfToolSearchToolRegex20251119 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfToolSearchToolRegex20251119
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *ToolUnionParam) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -7989,6 +8687,35 @@ type ToolUseBlockParamCallerUnion struct {
 func (u ToolUseBlockParamCallerUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfDirect, u.OfCodeExecution20250825, u.OfCodeExecution20260120)
 }
+
+func (u ToolUseBlockParamCallerUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfDirect != nil {
+		present = u.OfDirect
+	}
+	if u.OfCodeExecution20250825 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20250825
+	}
+	if u.OfCodeExecution20260120 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20260120
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *ToolUseBlockParamCallerUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -8441,6 +9168,29 @@ type WebFetchToolResultBlockParamContentUnion struct {
 func (u WebFetchToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfRequestWebFetchToolResultError, u.OfRequestWebFetchResultBlock)
 }
+
+func (u WebFetchToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfRequestWebFetchToolResultError != nil {
+		present = u.OfRequestWebFetchToolResultError
+	}
+	if u.OfRequestWebFetchResultBlock != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestWebFetchResultBlock
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *WebFetchToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -8508,6 +9258,35 @@ type WebFetchToolResultBlockParamCallerUnion struct {
 
 func (u WebFetchToolResultBlockParamCallerUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfDirect, u.OfCodeExecution20250825, u.OfCodeExecution20260120)
+}
+
+func (u WebFetchToolResultBlockParamCallerUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfDirect != nil {
+		present = u.OfDirect
+	}
+	if u.OfCodeExecution20250825 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20250825
+	}
+	if u.OfCodeExecution20260120 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20260120
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *WebFetchToolResultBlockParamCallerUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -8926,6 +9705,35 @@ type WebSearchToolResultBlockParamCallerUnion struct {
 func (u WebSearchToolResultBlockParamCallerUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfDirect, u.OfCodeExecution20250825, u.OfCodeExecution20260120)
 }
+
+func (u WebSearchToolResultBlockParamCallerUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfDirect != nil {
+		present = u.OfDirect
+	}
+	if u.OfCodeExecution20250825 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20250825
+	}
+	if u.OfCodeExecution20260120 != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfCodeExecution20260120
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
+}
 func (u *WebSearchToolResultBlockParamCallerUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
 }
@@ -8989,6 +9797,29 @@ type WebSearchToolResultBlockParamContentUnion struct {
 
 func (u WebSearchToolResultBlockParamContentUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfWebSearchToolResultBlockItem, u.OfRequestWebSearchToolResultError)
+}
+
+func (u WebSearchToolResultBlockParamContentUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfWebSearchToolResultBlockItem != nil {
+		present = u.OfWebSearchToolResultBlockItem
+	}
+	if u.OfRequestWebSearchToolResultError != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfRequestWebSearchToolResultError
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *WebSearchToolResultBlockParamContentUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
@@ -9511,6 +10342,29 @@ type MessageCountTokensParamsSystemUnion struct {
 
 func (u MessageCountTokensParamsSystemUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfString, u.OfTextBlockArray)
+}
+
+func (u MessageCountTokensParamsSystemUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfString.Valid() {
+		present = u.OfString
+	}
+	if u.OfTextBlockArray != nil {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfTextBlockArray
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *MessageCountTokensParamsSystemUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)
