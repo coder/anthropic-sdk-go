@@ -191,6 +191,17 @@ func (r CompletionNewParams) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 
+func (r CompletionNewParams) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow CompletionNewParams
+	return (*shadow)(&r), true
+}
+
 func (r *CompletionNewParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
