@@ -530,6 +530,17 @@ func (r BetaMessageBatchNewParams) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 
+func (r BetaMessageBatchNewParams) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow BetaMessageBatchNewParams
+	return (*shadow)(&r), true
+}
+
 func (r *BetaMessageBatchNewParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -552,6 +563,17 @@ type BetaMessageBatchNewParamsRequest struct {
 func (r BetaMessageBatchNewParamsRequest) MarshalJSON() (data []byte, err error) {
 	type shadow BetaMessageBatchNewParamsRequest
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+
+func (r BetaMessageBatchNewParamsRequest) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow BetaMessageBatchNewParamsRequest
+	return (*shadow)(&r), true
 }
 
 func (r *BetaMessageBatchNewParamsRequest) UnmarshalJSON(data []byte) error {
@@ -837,6 +859,17 @@ func (r BetaMessageBatchNewParamsRequestParams) MarshalJSON() (data []byte, err 
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 
+func (r BetaMessageBatchNewParamsRequestParams) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow BetaMessageBatchNewParamsRequestParams
+	return (*shadow)(&r), true
+}
+
 func (r *BetaMessageBatchNewParamsRequestParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -861,6 +894,29 @@ type BetaMessageBatchNewParamsRequestParamsContainerUnion struct {
 
 func (u BetaMessageBatchNewParamsRequestParamsContainerUnion) MarshalJSON() ([]byte, error) {
 	return param.MarshalUnion(u, u.OfContainers, u.OfString)
+}
+
+func (u BetaMessageBatchNewParamsRequestParamsContainerUnion) EncodeDirect() (any, bool) {
+	if u.IsNull() {
+		return nil, false
+	}
+	if _, ok := u.Overrides(); ok {
+		return nil, false
+	}
+	var present any
+	if u.OfContainers != nil {
+		present = u.OfContainers
+	}
+	if u.OfString.Valid() {
+		if present != nil {
+			return nil, false
+		}
+		present = u.OfString
+	}
+	if present == nil {
+		return nil, true
+	}
+	return present, true
 }
 func (u *BetaMessageBatchNewParamsRequestParamsContainerUnion) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, u)

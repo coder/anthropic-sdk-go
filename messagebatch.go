@@ -507,6 +507,17 @@ func (r MessageBatchNewParams) MarshalJSON() (data []byte, err error) {
 	return param.MarshalObject(r, (*shadow)(&r))
 }
 
+func (r MessageBatchNewParams) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow MessageBatchNewParams
+	return (*shadow)(&r), true
+}
+
 func (r *MessageBatchNewParams) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -529,6 +540,17 @@ type MessageBatchNewParamsRequest struct {
 func (r MessageBatchNewParamsRequest) MarshalJSON() (data []byte, err error) {
 	type shadow MessageBatchNewParamsRequest
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+
+func (r MessageBatchNewParamsRequest) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow MessageBatchNewParamsRequest
+	return (*shadow)(&r), true
 }
 
 func (r *MessageBatchNewParamsRequest) UnmarshalJSON(data []byte) error {
@@ -792,6 +814,17 @@ type MessageBatchNewParamsRequestParams struct {
 func (r MessageBatchNewParamsRequestParams) MarshalJSON() (data []byte, err error) {
 	type shadow MessageBatchNewParamsRequestParams
 	return param.MarshalObject(r, (*shadow)(&r))
+}
+
+func (r MessageBatchNewParamsRequestParams) EncodeDirect() (any, bool) {
+	if len(r.ExtraFields()) > 0 || r.IsNull() {
+		return nil, false
+	}
+	if _, ok := r.Overrides(); ok {
+		return nil, false
+	}
+	type shadow MessageBatchNewParamsRequestParams
+	return (*shadow)(&r), true
 }
 
 func (r *MessageBatchNewParamsRequestParams) UnmarshalJSON(data []byte) error {
