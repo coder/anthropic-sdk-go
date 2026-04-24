@@ -203,6 +203,70 @@ func TestBedrockBetaHeadersReRoutedThroughBody(t *testing.T) {
 	}
 }
 
+func TestBedrockStripsAnthropicAPIHeaders(t *testing.T) {
+	t.Setenv("ANTHROPIC_API_KEY", "test-anthropic-key")
+
+	cfg := aws.Config{
+		Region: "us-east-1",
+		Credentials: credentials.StaticCredentialsProvider{
+			Value: aws.Credentials{
+				AccessKeyID:     "test-access-key",
+				SecretAccessKey: "test-secret-key",
+			},
+		},
+	}
+
+	signer := v4.NewSigner()
+	middleware := bedrockMiddleware(signer, cfg)
+
+	requestBody := map[string]any{
+		"model": "claude-3-sonnet",
+		"messages": []map[string]string{
+			{"role": "user", "content": "Hello"},
+		},
+	}
+	bodyBytes, err := json.Marshal(requestBody)
+	if err != nil {
+		t.Fatalf("Failed to marshal request body: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", "https://bedrock-runtime.us-east-1.amazonaws.com/v1/messages", bytes.NewReader(bodyBytes))
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Api-Key", "test-anthropic-key")
+	req.Header.Set("Anthropic-Version", "2023-06-01")
+
+	_, err = middleware(req, func(r *http.Request) (*http.Response, error) {
+		if got := r.Header.Get("X-Api-Key"); got != "" {
+			t.Errorf("Expected X-Api-Key to be stripped, got %q", got)
+		}
+		if got := r.Header.Get("Anthropic-Version"); got != "" {
+			t.Errorf("Expected Anthropic-Version to be stripped, got %q", got)
+		}
+
+		authorization := r.Header.Get("Authorization")
+		if !bytes.Contains([]byte(authorization), []byte("AWS4-HMAC-SHA256")) {
+			t.Errorf("Expected SigV4 Authorization header, got %q", authorization)
+		}
+		if bytes.Contains([]byte(authorization), []byte("x-api-key")) {
+			t.Errorf("Expected x-api-key not to be signed, got %q", authorization)
+		}
+		if bytes.Contains([]byte(authorization), []byte("anthropic-version")) {
+			t.Errorf("Expected anthropic-version not to be signed, got %q", authorization)
+		}
+
+		return &http.Response{
+			StatusCode: 200,
+			Body:       http.NoBody,
+		}, nil
+	})
+	if err != nil {
+		t.Fatalf("Middleware failed: %v", err)
+	}
+}
+
 func TestBedrockBearerToken(t *testing.T) {
 	token := "test-bearer-token"
 	region := "us-west-2"

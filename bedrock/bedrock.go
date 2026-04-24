@@ -265,6 +265,13 @@ func bedrockMiddleware(signer *v4.Signer, cfg aws.Config) option.Middleware {
 			r.ContentLength = int64(len(body))
 		}
 
+		// Bedrock authenticates with AWS credentials or Bedrock bearer tokens,
+		// not Anthropic public API headers. Drop headers injected by the
+		// Anthropic client before signing so they do not reach Bedrock or
+		// become part of the SigV4 signed header set.
+		r.Header.Del("X-Api-Key")
+		r.Header.Del("anthropic-version")
+
 		ctx := r.Context()
 
 		switch {
