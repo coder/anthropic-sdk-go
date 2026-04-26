@@ -127,6 +127,81 @@ func TestBedrockURLEncoding(t *testing.T) {
 	}
 }
 
+func TestBedrockStreamingHeaders(t *testing.T) {
+	cfg := aws.Config{
+		Region: "us-east-1",
+		Credentials: credentials.StaticCredentialsProvider{
+			Value: aws.Credentials{
+				AccessKeyID:     "test-access-key",
+				SecretAccessKey: "test-secret-key",
+			},
+		},
+	}
+
+	signer := v4.NewSigner()
+	middleware := bedrockMiddleware(signer, cfg)
+
+	testCases := []struct {
+		name              string
+		stream            bool
+		wantAccept        string
+		wantBedrockAccept string
+	}{
+		{
+			name:       "non-streaming keeps JSON accept",
+			stream:     false,
+			wantAccept: "application/json",
+		},
+		{
+			name:              "streaming requests event stream frames",
+			stream:            true,
+			wantAccept:        "application/vnd.amazon.eventstream",
+			wantBedrockAccept: "application/json",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			requestBody := map[string]any{
+				"model":  "claude-3-sonnet",
+				"stream": tc.stream,
+				"messages": []map[string]string{
+					{"role": "user", "content": "Hello"},
+				},
+			}
+
+			bodyBytes, err := json.Marshal(requestBody)
+			if err != nil {
+				t.Fatalf("Failed to marshal request body: %v", err)
+			}
+
+			req, err := http.NewRequest("POST", "https://bedrock-runtime.us-east-1.amazonaws.com/v1/messages", bytes.NewReader(bodyBytes))
+			if err != nil {
+				t.Fatalf("Failed to create request: %v", err)
+			}
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Accept", "application/json")
+
+			_, err = middleware(req, func(r *http.Request) (*http.Response, error) {
+				if got := r.Header.Get("Accept"); got != tc.wantAccept {
+					t.Errorf("Expected Accept %q, got %q", tc.wantAccept, got)
+				}
+				if got := r.Header.Get("X-Amzn-Bedrock-Accept"); got != tc.wantBedrockAccept {
+					t.Errorf("Expected X-Amzn-Bedrock-Accept %q, got %q", tc.wantBedrockAccept, got)
+				}
+
+				return &http.Response{
+					StatusCode: 200,
+					Body:       http.NoBody,
+				}, nil
+			})
+			if err != nil {
+				t.Fatalf("Middleware failed: %v", err)
+			}
+		})
+	}
+}
+
 func TestBedrockBetaHeadersReRoutedThroughBody(t *testing.T) {
 	// Create a mock AWS config
 	cfg := aws.Config{
