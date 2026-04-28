@@ -18,10 +18,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/anthropic-sdk-go/internal"
-	"github.com/charmbracelet/anthropic-sdk-go/internal/apierror"
-	"github.com/charmbracelet/anthropic-sdk-go/internal/apiform"
-	"github.com/charmbracelet/anthropic-sdk-go/internal/apiquery"
+	"github.com/anthropics/anthropic-sdk-go/internal"
+	"github.com/anthropics/anthropic-sdk-go/internal/apierror"
+	"github.com/anthropics/anthropic-sdk-go/internal/apiform"
+	"github.com/anthropics/anthropic-sdk-go/internal/apiquery"
 )
 
 func getDefaultHeaders() map[string]string {
@@ -81,10 +81,8 @@ type RequestOption interface {
 	Apply(*RequestConfig) error
 }
 
-type (
-	RequestOptionFunc    func(*RequestConfig) error
-	PreRequestOptionFunc func(*RequestConfig) error
-)
+type RequestOptionFunc func(*RequestConfig) error
+type PreRequestOptionFunc func(*RequestConfig) error
 
 func (s RequestOptionFunc) Apply(r *RequestConfig) error    { return s(r) }
 func (s PreRequestOptionFunc) Apply(r *RequestConfig) error { return s(r) }

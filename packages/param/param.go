@@ -2,9 +2,8 @@ package param
 
 import (
 	"encoding/json"
+	"github.com/anthropics/anthropic-sdk-go/internal/encoding/json/sentinel"
 	"reflect"
-
-	"github.com/charmbracelet/anthropic-sdk-go/internal/encoding/json/sentinel"
 )
 
 // NullStruct is used to set a struct to the JSON value null.
@@ -174,21 +173,9 @@ func (m metadata) null() bool {
 	return false
 }
 
-// EDIT(begin): exported null check to avoid interface allocation
-// in param.IsNull generic function.
-
-// IsNull reports whether the value was set to the JSON value null.
-func (m metadata) IsNull() bool {
-	return m.null()
-}
-
-// EDIT(end)
-
-type (
-	metadata            struct{ any }
-	metadataNull        struct{}
-	metadataExtraFields map[string]any
-)
+type metadata struct{ any }
+type metadataNull struct{}
+type metadataExtraFields map[string]any
 
 func (m *metadata) setMetadata(override any) {
 	if override == nil {

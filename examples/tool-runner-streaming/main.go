@@ -5,8 +5,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/charmbracelet/anthropic-sdk-go"
-	"github.com/charmbracelet/anthropic-sdk-go/toolrunner"
+	"github.com/anthropics/anthropic-sdk-go"
+	"github.com/anthropics/anthropic-sdk-go/toolrunner"
 )
 
 type WeatherRequest struct {

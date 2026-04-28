@@ -5,10 +5,10 @@ package shared
 import (
 	"encoding/json"
 
-	"github.com/charmbracelet/anthropic-sdk-go/internal/apijson"
-	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
-	"github.com/charmbracelet/anthropic-sdk-go/packages/respjson"
-	"github.com/charmbracelet/anthropic-sdk-go/shared/constant"
+	"github.com/anthropics/anthropic-sdk-go/internal/apijson"
+	"github.com/anthropics/anthropic-sdk-go/packages/param"
+	"github.com/anthropics/anthropic-sdk-go/packages/respjson"
+	"github.com/anthropics/anthropic-sdk-go/shared/constant"
 )
 
 // aliased to make [param.APIUnion] private when embedding
@@ -31,7 +31,6 @@ type APIErrorObject struct {
 
 // Returns the unmodified JSON received from the API
 func (r APIErrorObject) RawJSON() string { return r.JSON.raw }
-
 func (r *APIErrorObject) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -52,7 +51,6 @@ type AuthenticationError struct {
 
 // Returns the unmodified JSON received from the API
 func (r AuthenticationError) RawJSON() string { return r.JSON.raw }
-
 func (r *AuthenticationError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -73,7 +71,6 @@ type BillingError struct {
 
 // Returns the unmodified JSON received from the API
 func (r BillingError) RawJSON() string { return r.JSON.raw }
-
 func (r *BillingError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -148,47 +145,47 @@ func (u ErrorObjectUnion) AsAny() anyErrorObject {
 
 func (u ErrorObjectUnion) AsInvalidRequestError() (v InvalidRequestError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsAuthenticationError() (v AuthenticationError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsBillingError() (v BillingError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsPermissionError() (v PermissionError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsNotFoundError() (v NotFoundError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsRateLimitError() (v RateLimitError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsTimeoutError() (v GatewayTimeoutError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsAPIError() (v APIErrorObject) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 func (u ErrorObjectUnion) AsOverloadedError() (v OverloadedError) {
 	apijson.UnmarshalRoot(json.RawMessage(u.JSON.raw), &v)
-	return v
+	return
 }
 
 // Returns the unmodified JSON received from the API
@@ -214,7 +211,6 @@ type ErrorResponse struct {
 
 // Returns the unmodified JSON received from the API
 func (r ErrorResponse) RawJSON() string { return r.JSON.raw }
-
 func (r *ErrorResponse) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -233,7 +229,6 @@ type GatewayTimeoutError struct {
 
 // Returns the unmodified JSON received from the API
 func (r GatewayTimeoutError) RawJSON() string { return r.JSON.raw }
-
 func (r *GatewayTimeoutError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -254,7 +249,6 @@ type InvalidRequestError struct {
 
 // Returns the unmodified JSON received from the API
 func (r InvalidRequestError) RawJSON() string { return r.JSON.raw }
-
 func (r *InvalidRequestError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -275,7 +269,6 @@ type NotFoundError struct {
 
 // Returns the unmodified JSON received from the API
 func (r NotFoundError) RawJSON() string { return r.JSON.raw }
-
 func (r *NotFoundError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -296,7 +289,6 @@ type OverloadedError struct {
 
 // Returns the unmodified JSON received from the API
 func (r OverloadedError) RawJSON() string { return r.JSON.raw }
-
 func (r *OverloadedError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -317,7 +309,6 @@ type PermissionError struct {
 
 // Returns the unmodified JSON received from the API
 func (r PermissionError) RawJSON() string { return r.JSON.raw }
-
 func (r *PermissionError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }
@@ -338,7 +329,6 @@ type RateLimitError struct {
 
 // Returns the unmodified JSON received from the API
 func (r RateLimitError) RawJSON() string { return r.JSON.raw }
-
 func (r *RateLimitError) UnmarshalJSON(data []byte) error {
 	return apijson.UnmarshalRoot(data, r)
 }

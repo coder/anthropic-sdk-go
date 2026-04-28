@@ -1,10 +1,9 @@
 package anthropic
 
 import (
+	"github.com/anthropics/anthropic-sdk-go/packages/param"
 	"io"
 	"time"
-
-	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
 )
 
 func String(s string) param.Opt[string]     { return param.NewOpt(s) }

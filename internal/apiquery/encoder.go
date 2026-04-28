@@ -9,7 +9,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
+	"github.com/anthropics/anthropic-sdk-go/packages/param"
 )
 
 var encoders sync.Map // map[reflect.Type]encoderFunc
@@ -103,7 +103,7 @@ func (e *encoder) newTypeEncoder(t reflect.Type) encoderFunc {
 		encoder := e.typeEncoder(t.Elem())
 		return func(key string, value reflect.Value) (pairs []Pair, err error) {
 			if !value.IsValid() || value.IsNil() {
-				return pairs, err
+				return
 			}
 			return encoder(key, value.Elem())
 		}
@@ -205,7 +205,7 @@ func (e *encoder) newStructTypeEncoder(t reflect.Type) encoderFunc {
 			}
 			pairs = append(pairs, subpairs...)
 		}
-		return pairs, err
+		return
 	}
 }
 
@@ -256,7 +256,7 @@ func (e *encoder) newMapEncoder(t reflect.Type) encoderFunc {
 			}
 			pairs = append(pairs, subpairs...)
 		}
-		return pairs, err
+		return
 	}
 }
 
@@ -300,7 +300,7 @@ func (e *encoder) newArrayTypeEncoder(t reflect.Type) encoderFunc {
 				}
 				pairs = append(pairs, subpairs...)
 			}
-			return pairs, err
+			return
 		}
 	case ArrayQueryFormatIndices:
 		panic("The array indices format is not supported yet")
@@ -315,7 +315,7 @@ func (e *encoder) newArrayTypeEncoder(t reflect.Type) encoderFunc {
 				}
 				pairs = append(pairs, subpairs...)
 			}
-			return pairs, err
+			return
 		}
 	default:
 		panic(fmt.Sprintf("Unknown ArrayFormat value: %d", e.settings.ArrayFormat))
@@ -411,4 +411,5 @@ func (e encoder) newInterfaceEncoder() encoderFunc {
 		}
 		return e.typeEncoder(value.Type())(key, value)
 	}
+
 }

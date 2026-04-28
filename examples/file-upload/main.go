@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/anthropic-sdk-go"
+	"github.com/anthropics/anthropic-sdk-go"
 )
 
 func main() {

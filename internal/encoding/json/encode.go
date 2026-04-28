@@ -19,6 +19,8 @@ import (
 	"encoding"
 	"encoding/base64"
 	"fmt"
+	"github.com/anthropics/anthropic-sdk-go/internal/encoding/json/sentinel"
+	"github.com/anthropics/anthropic-sdk-go/internal/encoding/json/shims"
 	"math"
 	"reflect"
 	"slices"
@@ -28,9 +30,6 @@ import (
 	"unicode"
 	"unicode/utf8"
 	_ "unsafe" // for linkname
-
-	"github.com/charmbracelet/anthropic-sdk-go/internal/encoding/json/sentinel"
-	"github.com/charmbracelet/anthropic-sdk-go/internal/encoding/json/shims"
 )
 
 // Marshal returns the JSON encoding of v.
@@ -212,23 +211,6 @@ func MarshalIndent(v any, prefix, indent string) ([]byte, error) {
 type Marshaler interface {
 	MarshalJSON() ([]byte, error)
 }
-
-// EDIT(begin): DirectEncoder for zero-copy nested encoding.
-// DirectEncoder is implemented by types whose MarshalJSON delegates
-// to Marshal on an underlying shadow struct. When detected, the
-// encoder calls EncodeDirect to encode the underlying value directly
-// into the parent buffer, skipping the intermediate []byte
-// allocation from MarshalJSON → Marshal → copy.
-//
-// EncodeDirect returns the value to encode (typically a *shadow
-// pointer) and true. If the type cannot use the fast path (e.g.
-// extras, overrides, null), it returns nil, false and the encoder
-// falls back to MarshalJSON.
-type DirectEncoder interface {
-	EncodeDirect() (any, bool)
-}
-
-// EDIT(end)
 
 // An UnsupportedTypeError is returned by [Marshal] when attempting
 // to encode an unsupported value type.
@@ -485,22 +467,6 @@ func marshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		e.WriteString("null")
 		return
 	}
-
-	// EDIT(begin): check DirectEncoder before MarshalJSON to avoid
-	// intermediate []byte allocation from the MarshalJSON → Marshal
-	// → copy round-trip.
-	if de, ok := v.Interface().(DirectEncoder); ok {
-		if underlying, canDirect := de.EncodeDirect(); canDirect {
-			if underlying == nil {
-				e.WriteString("null")
-				return
-			}
-			e.reflectValue(reflect.ValueOf(underlying), opts)
-			return
-		}
-	}
-	// EDIT(end)
-
 	m, ok := v.Interface().(Marshaler)
 	if !ok {
 		e.WriteString("null")
@@ -515,13 +481,10 @@ func marshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 
 	b, err := m.MarshalJSON()
 	if err == nil {
-		// EDIT(begin): skip appendCompact validation - MarshalJSON output is already valid compact JSON.
-		// appendCompact scans every byte to validate/compact, which is O(n) per nested MarshalJSON call.
-		// For deeply nested structures this becomes a significant bottleneck.
-		// HTML escaping is also skipped because MarshalJSON implementations in this SDK use Marshal()
-		// internally, which already performs HTML escaping when escapeHTML is enabled (the default).
-		e.Buffer.Write(b)
-		// EDIT(end)
+		e.Grow(len(b))
+		out := e.AvailableBuffer()
+		out, err = appendCompact(out, b, opts.escapeHTML)
+		e.Buffer.Write(out)
 	}
 	if err != nil {
 		e.error(&MarshalerError{v.Type(), err, "MarshalJSON"})
@@ -535,28 +498,6 @@ func addrMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		return
 	}
 
-	// EDIT(begin): check DirectEncoder on both pointer and value.
-	if de, ok := va.Interface().(DirectEncoder); ok {
-		if underlying, canDirect := de.EncodeDirect(); canDirect {
-			if underlying == nil {
-				e.WriteString("null")
-				return
-			}
-			e.reflectValue(reflect.ValueOf(underlying), opts)
-			return
-		}
-	} else if de, ok := v.Interface().(DirectEncoder); ok {
-		if underlying, canDirect := de.EncodeDirect(); canDirect {
-			if underlying == nil {
-				e.WriteString("null")
-				return
-			}
-			e.reflectValue(reflect.ValueOf(underlying), opts)
-			return
-		}
-	}
-	// EDIT(end)
-
 	// EDIT(begin): use custom time encoder
 	if timeMarshalEncoder(e, v, opts) {
 		return
@@ -566,11 +507,10 @@ func addrMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 	m := va.Interface().(Marshaler)
 	b, err := m.MarshalJSON()
 	if err == nil {
-		// EDIT(begin): skip appendCompact validation - MarshalJSON output is already valid compact JSON.
-		// HTML escaping is also skipped because MarshalJSON implementations in this SDK use Marshal()
-		// internally, which already performs HTML escaping when escapeHTML is enabled (the default).
-		e.Buffer.Write(b)
-		// EDIT(end)
+		e.Grow(len(b))
+		out := e.AvailableBuffer()
+		out, err = appendCompact(out, b, opts.escapeHTML)
+		e.Buffer.Write(out)
 	}
 	if err != nil {
 		e.error(&MarshalerError{v.Type(), err, "MarshalJSON"})
