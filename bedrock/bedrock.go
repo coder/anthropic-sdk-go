@@ -249,9 +249,10 @@ func bedrockMiddleware(signer *v4.Signer, cfg aws.Config) option.Middleware {
 				if stream {
 					method = "invoke-with-response-stream"
 
-					// Bedrock streams AWS event stream frames. The model's
-					// response MIME type is requested separately.
-					r.Header.Set("Accept", "application/vnd.amazon.eventstream")
+					// Bedrock uses X-Amzn-Bedrock-Accept for the model response
+					// MIME type. Botocore does not send an HTTP Accept header for
+					// this operation.
+					r.Header.Del("Accept")
 					if r.Header.Get("X-Amzn-Bedrock-Accept") == "" {
 						r.Header.Set("X-Amzn-Bedrock-Accept", "application/json")
 					}
