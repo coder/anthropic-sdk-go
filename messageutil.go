@@ -4,8 +4,9 @@ import (
 	"encoding/json"
 	"fmt"
 
-	"github.com/anthropics/anthropic-sdk-go/internal/paramutil"
-	"github.com/anthropics/anthropic-sdk-go/packages/param"
+	"github.com/charmbracelet/anthropic-sdk-go/internal/paramutil"
+	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
+	"github.com/charmbracelet/anthropic-sdk-go/packages/respjson"
 )
 
 // Accumulate builds up the Message incrementally from a MessageStreamEvent. The Message then can be used as
@@ -28,7 +29,25 @@ func (acc *Message) Accumulate(event MessageStreamEventUnion) error {
 	case MessageDeltaEvent:
 		acc.StopReason = event.Delta.StopReason
 		acc.StopSequence = event.Delta.StopSequence
-		acc.Usage.OutputTokens = event.Usage.OutputTokens
+		// Merge only fields present in the delta JSON, so earlier cumulative
+		// values (e.g. input and cache tokens from message_start) are preserved
+		// when a later delta omits them. Check Raw() against respjson.Omitted
+		// rather than using Valid(), because only JSON presence matters here.
+		if event.Usage.JSON.CacheCreationInputTokens.Raw() != respjson.Omitted {
+			acc.Usage.CacheCreationInputTokens = event.Usage.CacheCreationInputTokens
+		}
+		if event.Usage.JSON.CacheReadInputTokens.Raw() != respjson.Omitted {
+			acc.Usage.CacheReadInputTokens = event.Usage.CacheReadInputTokens
+		}
+		if event.Usage.JSON.InputTokens.Raw() != respjson.Omitted {
+			acc.Usage.InputTokens = event.Usage.InputTokens
+		}
+		if event.Usage.JSON.OutputTokens.Raw() != respjson.Omitted {
+			acc.Usage.OutputTokens = event.Usage.OutputTokens
+		}
+		if event.Usage.JSON.ServerToolUse.Raw() != respjson.Omitted {
+			acc.Usage.ServerToolUse = event.Usage.ServerToolUse
+		}
 	case ContentBlockStartEvent:
 		acc.Content = append(acc.Content, ContentBlockUnion{})
 		err := acc.Content[len(acc.Content)-1].UnmarshalJSON([]byte(event.ContentBlock.RawJSON()))

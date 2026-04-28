@@ -127,6 +127,81 @@ func TestBedrockURLEncoding(t *testing.T) {
 	}
 }
 
+func TestBedrockStreamingHeaders(t *testing.T) {
+	cfg := aws.Config{
+		Region: "us-east-1",
+		Credentials: credentials.StaticCredentialsProvider{
+			Value: aws.Credentials{
+				AccessKeyID:     "test-access-key",
+				SecretAccessKey: "test-secret-key",
+			},
+		},
+	}
+
+	signer := v4.NewSigner()
+	middleware := bedrockMiddleware(signer, cfg)
+
+	testCases := []struct {
+		name              string
+		stream            bool
+		wantAccept        string
+		wantBedrockAccept string
+	}{
+		{
+			name:       "non-streaming keeps JSON accept",
+			stream:     false,
+			wantAccept: "application/json",
+		},
+		{
+			name:              "streaming requests event stream frames",
+			stream:            true,
+			wantAccept:        "application/vnd.amazon.eventstream",
+			wantBedrockAccept: "application/json",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			requestBody := map[string]any{
+				"model":  "claude-3-sonnet",
+				"stream": tc.stream,
+				"messages": []map[string]string{
+					{"role": "user", "content": "Hello"},
+				},
+			}
+
+			bodyBytes, err := json.Marshal(requestBody)
+			if err != nil {
+				t.Fatalf("Failed to marshal request body: %v", err)
+			}
+
+			req, err := http.NewRequest("POST", "https://bedrock-runtime.us-east-1.amazonaws.com/v1/messages", bytes.NewReader(bodyBytes))
+			if err != nil {
+				t.Fatalf("Failed to create request: %v", err)
+			}
+			req.Header.Set("Content-Type", "application/json")
+			req.Header.Set("Accept", "application/json")
+
+			_, err = middleware(req, func(r *http.Request) (*http.Response, error) {
+				if got := r.Header.Get("Accept"); got != tc.wantAccept {
+					t.Errorf("Expected Accept %q, got %q", tc.wantAccept, got)
+				}
+				if got := r.Header.Get("X-Amzn-Bedrock-Accept"); got != tc.wantBedrockAccept {
+					t.Errorf("Expected X-Amzn-Bedrock-Accept %q, got %q", tc.wantBedrockAccept, got)
+				}
+
+				return &http.Response{
+					StatusCode: 200,
+					Body:       http.NoBody,
+				}, nil
+			})
+			if err != nil {
+				t.Fatalf("Middleware failed: %v", err)
+			}
+		})
+	}
+}
+
 func TestBedrockBetaHeadersReRoutedThroughBody(t *testing.T) {
 	// Create a mock AWS config
 	cfg := aws.Config{
@@ -198,6 +273,70 @@ func TestBedrockBetaHeadersReRoutedThroughBody(t *testing.T) {
 		}, nil
 	})
 
+	if err != nil {
+		t.Fatalf("Middleware failed: %v", err)
+	}
+}
+
+func TestBedrockStripsAnthropicAPIHeaders(t *testing.T) {
+	t.Setenv("ANTHROPIC_API_KEY", "test-anthropic-key")
+
+	cfg := aws.Config{
+		Region: "us-east-1",
+		Credentials: credentials.StaticCredentialsProvider{
+			Value: aws.Credentials{
+				AccessKeyID:     "test-access-key",
+				SecretAccessKey: "test-secret-key",
+			},
+		},
+	}
+
+	signer := v4.NewSigner()
+	middleware := bedrockMiddleware(signer, cfg)
+
+	requestBody := map[string]any{
+		"model": "claude-3-sonnet",
+		"messages": []map[string]string{
+			{"role": "user", "content": "Hello"},
+		},
+	}
+	bodyBytes, err := json.Marshal(requestBody)
+	if err != nil {
+		t.Fatalf("Failed to marshal request body: %v", err)
+	}
+
+	req, err := http.NewRequest("POST", "https://bedrock-runtime.us-east-1.amazonaws.com/v1/messages", bytes.NewReader(bodyBytes))
+	if err != nil {
+		t.Fatalf("Failed to create request: %v", err)
+	}
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("X-Api-Key", "test-anthropic-key")
+	req.Header.Set("Anthropic-Version", "2023-06-01")
+
+	_, err = middleware(req, func(r *http.Request) (*http.Response, error) {
+		if got := r.Header.Get("X-Api-Key"); got != "" {
+			t.Errorf("Expected X-Api-Key to be stripped, got %q", got)
+		}
+		if got := r.Header.Get("Anthropic-Version"); got != "" {
+			t.Errorf("Expected Anthropic-Version to be stripped, got %q", got)
+		}
+
+		authorization := r.Header.Get("Authorization")
+		if !bytes.Contains([]byte(authorization), []byte("AWS4-HMAC-SHA256")) {
+			t.Errorf("Expected SigV4 Authorization header, got %q", authorization)
+		}
+		if bytes.Contains([]byte(authorization), []byte("x-api-key")) {
+			t.Errorf("Expected x-api-key not to be signed, got %q", authorization)
+		}
+		if bytes.Contains([]byte(authorization), []byte("anthropic-version")) {
+			t.Errorf("Expected anthropic-version not to be signed, got %q", authorization)
+		}
+
+		return &http.Response{
+			StatusCode: 200,
+			Body:       http.NoBody,
+		}, nil
+	})
 	if err != nil {
 		t.Fatalf("Middleware failed: %v", err)
 	}

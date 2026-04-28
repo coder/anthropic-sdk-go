@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"iter"
 
-	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/charmbracelet/anthropic-sdk-go/option"
 	"golang.org/x/sync/errgroup"
 )
 
