@@ -8,17 +8,15 @@ import (
 	"os"
 	"testing"
 
-	"github.com/charmbracelet/anthropic-sdk-go"
-	"github.com/charmbracelet/anthropic-sdk-go/internal/testutil"
-	"github.com/charmbracelet/anthropic-sdk-go/option"
+	"github.com/anthropics/anthropic-sdk-go"
+	"github.com/anthropics/anthropic-sdk-go/internal/testutil"
+	"github.com/anthropics/anthropic-sdk-go/option"
 )
 
 func TestMessageBatchNew(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
-	} else {
-		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -140,8 +138,6 @@ func TestMessageBatchGet(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
-	} else {
-		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -164,8 +160,6 @@ func TestMessageBatchListWithOptionalParams(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
-	} else {
-		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -192,8 +186,6 @@ func TestMessageBatchDelete(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
-	} else {
-		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return
@@ -216,8 +208,6 @@ func TestMessageBatchCancel(t *testing.T) {
 	baseURL := "http://localhost:4010"
 	if envURL, ok := os.LookupEnv("TEST_API_BASE_URL"); ok {
 		baseURL = envURL
-	} else {
-		t.Skip("requires TEST_API_BASE_URL or mock server on localhost:4010")
 	}
 	if !testutil.CheckTestServer(t, baseURL) {
 		return

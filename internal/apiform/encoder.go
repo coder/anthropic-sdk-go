@@ -13,7 +13,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
+	"github.com/anthropics/anthropic-sdk-go/packages/param"
 )
 
 var encoders sync.Map // map[encoderEntry]encoderFunc
@@ -469,5 +469,5 @@ func WriteExtras(writer *multipart.Writer, extras map[string]any) (err error) {
 			break
 		}
 	}
-	return err
+	return
 }

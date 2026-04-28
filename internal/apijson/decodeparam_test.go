@@ -3,11 +3,10 @@ package apijson_test
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/anthropics/anthropic-sdk-go/internal/apijson"
+	"github.com/anthropics/anthropic-sdk-go/packages/param"
 	"reflect"
 	"testing"
-
-	"github.com/charmbracelet/anthropic-sdk-go/internal/apijson"
-	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
 )
 
 func TestOptionalDecoders(t *testing.T) {
@@ -15,6 +14,7 @@ func TestOptionalDecoders(t *testing.T) {
 		buf string
 		val any
 	}{
+
 		"opt_string_present": {
 			`"hello"`,
 			param.NewOpt("hello"),
@@ -309,11 +309,9 @@ func TestUnionStruct(t *testing.T) {
 	}
 }
 
-type (
-	ConstantA string
-	ConstantB string
-	ConstantC string
-)
+type ConstantA string
+type ConstantB string
+type ConstantC string
 
 func (c ConstantA) Default() string { return "A" }
 func (c ConstantB) Default() string { return "B" }

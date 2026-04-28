@@ -4,9 +4,9 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/charmbracelet/anthropic-sdk-go"
-	"github.com/charmbracelet/anthropic-sdk-go/option"
-	"github.com/charmbracelet/anthropic-sdk-go/packages/param"
+	"github.com/anthropics/anthropic-sdk-go"
+	"github.com/anthropics/anthropic-sdk-go/option"
+	"github.com/anthropics/anthropic-sdk-go/packages/param"
 )
 
 func main() {
@@ -61,4 +61,5 @@ func main() {
 	if stream.Err() != nil {
 		panic(stream.Err())
 	}
+
 }
