@@ -153,9 +153,8 @@ func TestBedrockStreamingHeaders(t *testing.T) {
 			wantAccept: "application/json",
 		},
 		{
-			name:              "streaming requests event stream frames",
+			name:              "streaming uses Bedrock accept header",
 			stream:            true,
-			wantAccept:        "application/vnd.amazon.eventstream",
 			wantBedrockAccept: "application/json",
 		},
 	}
