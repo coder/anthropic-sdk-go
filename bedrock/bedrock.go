@@ -248,6 +248,13 @@ func bedrockMiddleware(signer *v4.Signer, cfg aws.Config) option.Middleware {
 				var method string
 				if stream {
 					method = "invoke-with-response-stream"
+
+					// Bedrock streams AWS event stream frames. The model's
+					// response MIME type is requested separately.
+					r.Header.Set("Accept", "application/vnd.amazon.eventstream")
+					if r.Header.Get("X-Amzn-Bedrock-Accept") == "" {
+						r.Header.Set("X-Amzn-Bedrock-Accept", "application/json")
+					}
 				} else {
 					method = "invoke"
 				}
