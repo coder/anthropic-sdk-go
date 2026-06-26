@@ -47,7 +47,7 @@ func sendAWSMessage(t *testing.T, client *aws.Client) {
 	t.Helper()
 
 	message, err := client.Messages.New(context.Background(), anthropic.MessageNewParams{
-		Model:     liveModel(),
+		Model:     anthropic.Model(liveModel()),
 		MaxTokens: 32,
 		Messages: []anthropic.MessageParam{
 			anthropic.NewUserMessage(anthropic.NewTextBlock("Say exactly: hello")),
