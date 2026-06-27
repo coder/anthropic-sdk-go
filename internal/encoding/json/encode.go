@@ -218,6 +218,23 @@ type Marshaler interface {
 	MarshalJSON() ([]byte, error)
 }
 
+// EDIT(begin): DirectEncoder for zero-copy nested encoding.
+// DirectEncoder is implemented by types whose MarshalJSON delegates
+// to Marshal on an underlying shadow struct. When detected, the
+// encoder calls EncodeDirect to encode the underlying value directly
+// into the parent buffer, skipping the intermediate []byte
+// allocation from MarshalJSON → Marshal → copy.
+//
+// EncodeDirect returns the value to encode (typically a *shadow
+// pointer) and true. If the type cannot use the fast path (e.g.
+// extras, overrides, null), it returns nil, false and the encoder
+// falls back to MarshalJSON.
+type DirectEncoder interface {
+	EncodeDirect() (any, bool)
+}
+
+// EDIT(end)
+
 // An UnsupportedTypeError is returned by [Marshal] when attempting
 // to encode an unsupported value type.
 type UnsupportedTypeError struct {
@@ -476,6 +493,22 @@ func marshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		e.WriteString("null")
 		return
 	}
+
+	// EDIT(begin): check DirectEncoder before MarshalJSON to avoid
+	// intermediate []byte allocation from the MarshalJSON → Marshal
+	// → copy round-trip.
+	if de, ok := v.Interface().(DirectEncoder); ok {
+		if underlying, canDirect := de.EncodeDirect(); canDirect {
+			if underlying == nil {
+				e.WriteString("null")
+				return
+			}
+			e.reflectValue(reflect.ValueOf(underlying), opts)
+			return
+		}
+	}
+	// EDIT(end)
+
 	m, ok := v.Interface().(Marshaler)
 	if !ok {
 		e.WriteString("null")
@@ -506,6 +539,28 @@ func addrMarshalerEncoder(e *encodeState, v reflect.Value, opts encOpts) {
 		e.WriteString("null")
 		return
 	}
+
+	// EDIT(begin): check DirectEncoder on both pointer and value.
+	if de, ok := va.Interface().(DirectEncoder); ok {
+		if underlying, canDirect := de.EncodeDirect(); canDirect {
+			if underlying == nil {
+				e.WriteString("null")
+				return
+			}
+			e.reflectValue(reflect.ValueOf(underlying), opts)
+			return
+		}
+	} else if de, ok := v.Interface().(DirectEncoder); ok {
+		if underlying, canDirect := de.EncodeDirect(); canDirect {
+			if underlying == nil {
+				e.WriteString("null")
+				return
+			}
+			e.reflectValue(reflect.ValueOf(underlying), opts)
+			return
+		}
+	}
+	// EDIT(end)
 
 	// EDIT(begin): use custom time encoder
 	if timeMarshalEncoder(e, v, opts) {
