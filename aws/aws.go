@@ -44,6 +44,24 @@ type ClientConfig struct {
 	// AWSProfile is the AWS named profile for credential resolution via the provider chain.
 	AWSProfile string
 
+	// AWSRoleARN, when set, is the IAM role assumed via STS before signing
+	// requests. The base identity (explicit static keys, AWSProfile, or the
+	// default AWS credential chain) signs the AssumeRole call, and the resulting
+	// temporary credentials sign requests. The temporary credentials are cached
+	// and refreshed automatically before they expire.
+	AWSRoleARN string
+
+	// AWSExternalID is the STS external ID passed when assuming AWSRoleARN. It
+	// mitigates the confused-deputy problem for cross-account role assumption and
+	// is only meaningful when AWSRoleARN is set.
+	AWSExternalID string
+
+	// AWSRoleSessionName is the STS role session name used when assuming
+	// AWSRoleARN. When unset, it falls back to the AWS_ROLE_SESSION_NAME env var
+	// and then defaults to "coder-aigateway". Only meaningful when AWSRoleARN is
+	// set.
+	AWSRoleSessionName string
+
 	// AWSRegion is the AWS region for the gateway URL and SigV4 signing.
 	// Resolved by precedence: ClientConfig.AWSRegion > AWS_REGION env var.
 	AWSRegion string
@@ -86,6 +104,10 @@ type Client struct {
 //  3. AWSProfile arg (SigV4 via provider chain)
 //  4. ANTHROPIC_AWS_API_KEY env var (x-api-key header)
 //  5. Default AWS credential chain (SigV4)
+//
+// When AWSRoleARN is set, the resolved base identity (static keys, AWSProfile,
+// or the default chain) is used to assume that role via STS, and the resulting
+// temporary credentials are used for SigV4 signing.
 func NewClient(ctx context.Context, cfg ClientConfig, opts ...option.RequestOption) (*Client, error) {
 	opts, err := awsauth.CreateClientOptions(ctx, toInternalConfig(cfg), awsResolveParams(), opts...)
 	if err != nil {
@@ -126,5 +148,8 @@ func toInternalConfig(cfg ClientConfig) awsauth.ClientConfig {
 		WorkspaceID:        cfg.WorkspaceID,
 		BaseURL:            cfg.BaseURL,
 		SkipAuth:           cfg.SkipAuth,
+		AWSRoleARN:         cfg.AWSRoleARN,
+		AWSExternalID:      cfg.AWSExternalID,
+		AWSRoleSessionName: cfg.AWSRoleSessionName,
 	}
 }

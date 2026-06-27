@@ -15,9 +15,16 @@ import (
 	v4 "github.com/aws/aws-sdk-go-v2/aws/signer/v4"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
+	"github.com/aws/aws-sdk-go-v2/credentials/stscreds"
+	"github.com/aws/aws-sdk-go-v2/service/sts"
 
 	"github.com/anthropics/anthropic-sdk-go/option"
 )
+
+// defaultRoleSessionName is the STS role session name used when AWSRoleARN is
+// set but no session name is configured. A stable value keeps AssumeRole calls
+// identifiable in CloudTrail.
+const defaultRoleSessionName = "coder-aigateway"
 
 // ClientConfig holds the configuration for creating an Anthropic client that authenticates
 // via AWS credentials. This is the internal representation used by both the aws and bedrock
@@ -32,6 +39,21 @@ type ClientConfig struct {
 	WorkspaceID        string
 	BaseURL            string
 	SkipAuth           bool
+
+	// AWSRoleARN, when set, is the IAM role assumed via STS before signing
+	// requests. The base identity (explicit static keys, AWSProfile, or the
+	// default AWS credential chain) signs the AssumeRole call, and the
+	// resulting temporary credentials sign API requests.
+	AWSRoleARN string
+
+	// AWSExternalID is the STS external ID used when assuming AWSRoleARN. It
+	// mitigates the confused-deputy problem for cross-account role assumption
+	// and is only meaningful when AWSRoleARN is set.
+	AWSExternalID string
+
+	// AWSRoleSessionName is the STS role session name used when assuming
+	// AWSRoleARN. It defaults to defaultRoleSessionName when unset.
+	AWSRoleSessionName string
 }
 
 // ResolveParams customizes config resolution per client (env var names, base URL derivation, service name).
@@ -121,7 +143,7 @@ func ResolveConfig(cfg ClientConfig, params ResolveParams) (ResolvedConfig, erro
 		switch {
 		case cfg.APIKey != "":
 			rc.APIKey = cfg.APIKey
-		case (cfg.AWSAccessKey != "" && cfg.AWSSecretAccessKey != "") || cfg.AWSProfile != "":
+		case (cfg.AWSAccessKey != "" && cfg.AWSSecretAccessKey != "") || cfg.AWSProfile != "" || cfg.AWSRoleARN != "":
 			rc.UseSigV4 = true
 		default:
 			envKey := envLookup(params.EnvAPIKey, params.EnvAPIKeyFallback)
@@ -160,35 +182,75 @@ func envLookup(names ...string) string {
 	return ""
 }
 
-// BuildAWSConfig creates an [awssdk.Config] from explicit credentials or the default
-// AWS credential chain.
+// BuildAWSConfig creates an [awssdk.Config] from explicit credentials or the
+// default AWS credential chain. When cfg.AWSRoleARN is set, the resolved base
+// identity is used to assume that role via STS, and the returned config signs
+// requests with the resulting temporary credentials.
 func BuildAWSConfig(ctx context.Context, cfg ClientConfig, region string) (awssdk.Config, error) {
-	if cfg.AWSAccessKey != "" && cfg.AWSSecretAccessKey != "" {
-		return awssdk.Config{
-			Region: region,
-			Credentials: credentials.StaticCredentialsProvider{
-				Value: awssdk.Credentials{
-					AccessKeyID:     cfg.AWSAccessKey,
-					SecretAccessKey: cfg.AWSSecretAccessKey,
-					SessionToken:    cfg.AWSSessionToken,
-				},
-			},
-		}, nil
+	// Resolve role-assumption parameters, honoring the standard AWS environment
+	// variables when the corresponding config fields are unset. No env var is
+	// honored for the external ID; it must be set explicitly.
+	roleARN := cfg.AWSRoleARN
+	if roleARN == "" {
+		roleARN = os.Getenv("AWS_ROLE_ARN")
+	}
+	roleSessionName := cfg.AWSRoleSessionName
+	if roleSessionName == "" {
+		roleSessionName = os.Getenv("AWS_ROLE_SESSION_NAME")
+	}
+	if roleSessionName == "" {
+		roleSessionName = defaultRoleSessionName
 	}
 
-	loadOpts := []func(*config.LoadOptions) error{
-		config.WithRegion(region),
+	// Resolve the base credential source via the AWS SDK default config loader so
+	// that region, shared config/profile, and standard endpoint resolution (e.g.
+	// AWS_ENDPOINT_URL_STS) all apply uniformly. Explicit static keys, when
+	// provided, override the credential provider but leave the rest of the
+	// resolved config intact. The default chain otherwise covers env vars, shared
+	// config, IRSA / EKS Pod Identity / EC2 Instance Profile, SSO, and more.
+	loadOpts := []func(*config.LoadOptions) error{}
+	if region != "" {
+		loadOpts = append(loadOpts, config.WithRegion(region))
 	}
 	if cfg.AWSProfile != "" {
 		loadOpts = append(loadOpts, config.WithSharedConfigProfile(cfg.AWSProfile))
+	}
+	if cfg.AWSAccessKey != "" && cfg.AWSSecretAccessKey != "" {
+		loadOpts = append(loadOpts, config.WithCredentialsProvider(
+			credentials.NewStaticCredentialsProvider(
+				cfg.AWSAccessKey,
+				cfg.AWSSecretAccessKey,
+				cfg.AWSSessionToken,
+			),
+		))
 	}
 	awsCfg, err := config.LoadDefaultConfig(ctx, loadOpts...)
 	if err != nil {
 		return awssdk.Config{}, fmt.Errorf("failed to load AWS config: %w", err)
 	}
 
+	// When a role ARN is configured, the base identity signs the STS AssumeRole
+	// call and the resulting temporary credentials sign API requests. The
+	// assume-role provider is wrapped in a credentials cache so the role is not
+	// re-assumed on every request and is refreshed automatically before expiry.
+	if roleARN != "" {
+		if awsCfg.Region == "" {
+			return awssdk.Config{}, fmt.Errorf("no AWS region found; a region is required to assume role %q", roleARN)
+		}
+		externalID := cfg.AWSExternalID
+		provider := stscreds.NewAssumeRoleProvider(sts.NewFromConfig(awsCfg), roleARN, func(o *stscreds.AssumeRoleOptions) {
+			o.RoleSessionName = roleSessionName
+			if externalID != "" {
+				o.ExternalID = &externalID
+			}
+		})
+		awsCfg.Credentials = awssdk.NewCredentialsCache(provider)
+	}
+
 	// Eagerly verify that credentials can be resolved so callers get a clear
-	// error at setup time rather than on the first request.
+	// error at setup time rather than on the first request. When a role is
+	// assumed, this also surfaces STS misconfiguration (invalid ARN, missing
+	// permissions, wrong external ID) at setup.
 	if _, err := awsCfg.Credentials.Retrieve(ctx); err != nil {
 		return awssdk.Config{}, fmt.Errorf("failed to resolve AWS credentials: %w", err)
 	}
