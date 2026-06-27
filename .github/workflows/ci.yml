@@ -85,10 +85,17 @@ jobs:
     timeout-minutes: 10
     name: detect-breaking-changes-vs-main
     runs-on: ${{ github.repository == 'stainless-sdks/anthropic-go' && 'depot-ubuntu-24.04' || 'ubuntu-latest' }}
+    # Skip on the Coder fork: this branch re-baselines onto upstream v1.52.0,
+    # so origin/main (v1.26.0) is 26 versions behind and the overlaid old
+    # tests reference symbols upstream has since renamed or removed. The
+    # comparison reports upstream's intentional API evolution, not a
+    # regression in this fork. Mirrors the repository guard the Coder fork
+    # already applies to breaking-change detection on main.
     if: |-
-      (github.event_name == 'push' &&
-       !startsWith(github.ref, 'refs/heads/release-please--')) ||
-      github.event.pull_request.head.repo.fork
+      github.repository == 'anthropics/anthropic-sdk-go' &&
+      (((github.event_name == 'push' &&
+         !startsWith(github.ref, 'refs/heads/release-please--')) ||
+        github.event.pull_request.head.repo.fork))
     steps:
       # fetch-depth: 0 fetches full commit history (all branches, so
       # origin/main is available) so `git merge-base HEAD origin/main`
