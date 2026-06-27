@@ -273,6 +273,14 @@ func bedrockMiddleware(signer *v4.Signer, cfg aws.Config) option.Middleware {
 				var method string
 				if stream {
 					method = "invoke-with-response-stream"
+
+					// Bedrock uses X-Amzn-Bedrock-Accept for the model response
+					// MIME type. Botocore does not send an HTTP Accept header for
+					// this operation.
+					r.Header.Del("Accept")
+					if r.Header.Get("X-Amzn-Bedrock-Accept") == "" {
+						r.Header.Set("X-Amzn-Bedrock-Accept", "application/json")
+					}
 				} else {
 					method = "invoke"
 				}
@@ -289,6 +297,13 @@ func bedrockMiddleware(signer *v4.Signer, cfg aws.Config) option.Middleware {
 			}
 			r.ContentLength = int64(len(body))
 		}
+
+		// Bedrock authenticates with AWS credentials or Bedrock bearer tokens,
+		// not Anthropic public API headers. Drop headers injected by the
+		// Anthropic client before signing so they do not reach Bedrock or
+		// become part of the SigV4 signed header set.
+		r.Header.Del("X-Api-Key")
+		r.Header.Del("anthropic-version")
 
 		// Use bearer token authentication if configured, otherwise fall back to SigV4
 		if cfg.BearerAuthTokenProvider != nil {
