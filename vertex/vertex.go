@@ -10,6 +10,7 @@ import (
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/api/transport"
+	thttp "google.golang.org/api/transport/http"
 
 	"github.com/anthropics/anthropic-sdk-go/internal/requestconfig"
 	sdkoption "github.com/anthropics/anthropic-sdk-go/option"
@@ -55,10 +56,6 @@ func WithGoogleAuth(ctx context.Context, region string, projectID string, scopes
 // (POST /v1/messages with the model in the body) — identical to the
 // first-party API.
 func WithCredentials(ctx context.Context, region string, projectID string, creds *google.Credentials) sdkoption.RequestOption {
-	client, _, err := transport.NewHTTPClient(ctx, option.WithTokenSource(creds.TokenSource))
-	if err != nil {
-		panic(fmt.Errorf("failed to create HTTP client: %v", err))
-	}
 	middleware := vertexMiddleware(region, projectID)
 
 	var baseURL string
@@ -74,6 +71,27 @@ func WithCredentials(ctx context.Context, region string, projectID string, creds
 	}
 
 	return requestconfig.RequestOptionFunc(func(rc *requestconfig.RequestConfig) error {
+		// Build the OAuth-authorized HTTP client lazily so a caller-provided
+		// custom client/transport is preserved and wrapped, rather than being
+		// overridden. Falls back to a fresh transport when no custom client is set.
+		getClient := func() (*http.Client, error) {
+			if rc.HTTPClient == nil || rc.HTTPClient.Transport == nil {
+				c, _, err := transport.NewHTTPClient(ctx, option.WithTokenSource(creds.TokenSource))
+				return c, err
+			}
+			rt, err := thttp.NewTransport(
+				ctx,
+				rc.HTTPClient.Transport,
+				option.WithTokenSource(creds.TokenSource),
+			)
+			return &http.Client{Transport: rt}, err
+		}
+
+		client, err := getClient()
+		if err != nil {
+			return fmt.Errorf("failed to create http client: %v", err)
+		}
+
 		return rc.Apply(
 			sdkoption.WithBaseURL(baseURL),
 			sdkoption.WithMiddleware(middleware),
@@ -89,13 +107,16 @@ func vertexMiddleware(region, projectID string) sdkoption.Middleware {
 			if err != nil {
 				return nil, err
 			}
-			r.Body.Close()
+			if err := r.Body.Close(); err != nil {
+				return nil, err
+			}
 
 			if !gjson.GetBytes(body, "anthropic_version").Exists() {
 				body, _ = sjson.SetBytes(body, "anthropic_version", DefaultVersion)
 			}
 
-			if r.URL.Path == "/v1/messages" && r.Method == http.MethodPost {
+			switch {
+			case r.URL.Path == "/v1/messages" && r.Method == http.MethodPost:
 				if projectID == "" {
 					return nil, fmt.Errorf("no projectId was given and it could not be resolved from credentials")
 				}
@@ -111,14 +132,16 @@ func vertexMiddleware(region, projectID string) sdkoption.Middleware {
 				}
 
 				r.URL.Path = fmt.Sprintf("/v1/projects/%s/locations/%s/publishers/anthropic/models/%s:%s", projectID, region, model, specifier)
-			}
 
-			if r.URL.Path == "/v1/messages/count_tokens" && r.Method == http.MethodPost {
+			case r.URL.Path == "/v1/messages/count_tokens" && r.Method == http.MethodPost:
 				if projectID == "" {
 					return nil, fmt.Errorf("no projectId was given and it could not be resolved from credentials")
 				}
 
 				r.URL.Path = fmt.Sprintf("/v1/projects/%s/locations/%s/publishers/anthropic/models/count-tokens:rawPredict", projectID, region)
+
+			default:
+				return nil, fmt.Errorf("vertex middleware does not support %s %s", r.Method, r.URL.Path)
 			}
 
 			reader := bytes.NewReader(body)
